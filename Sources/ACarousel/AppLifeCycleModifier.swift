@@ -20,12 +20,13 @@
 
 import SwiftUI
 
-
 #if os(macOS)
 import AppKit
+
 typealias Application = NSApplication
 #else
 import UIKit
+
 typealias Application = UIApplication
 #endif
 
@@ -33,16 +34,16 @@ typealias Application = UIApplication
 /// inactive or active
 @available(iOS 13.0, OSX 10.15, *)
 struct AppLifeCycleModifier: ViewModifier {
-    
+
     let active = NotificationCenter.default.publisher(for: Application.didBecomeActiveNotification)
     let inactive = NotificationCenter.default.publisher(for: Application.willResignActiveNotification)
-    
-    private let action: (Bool) -> ()
-    
-    init(_ action: @escaping (Bool) -> ()) {
+
+    private let action: (Bool) -> Void
+
+    init(_ action: @escaping (Bool) -> Void) {
         self.action = action
     }
-    
+
     func body(content: Content) -> some View {
         content
             .onAppear() /// `onReceive` will not work in the Modifier Without `onAppear`
@@ -57,7 +58,7 @@ struct AppLifeCycleModifier: ViewModifier {
 
 @available(iOS 13.0, OSX 10.15, *)
 extension View {
-    func onReceiveAppLifeCycle(perform action: @escaping (Bool) -> ()) -> some View {
+    func onReceiveAppLifeCycle(perform action: @escaping (Bool) -> Void) -> some View {
         self.modifier(AppLifeCycleModifier(action))
     }
 }
