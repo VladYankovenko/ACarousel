@@ -20,6 +20,7 @@ struct ContentView: View {
     @State var spacing: CGFloat = 10
     @State var headspace: CGFloat = 10
     @State var sidesScaling: CGFloat = 0.8
+    @State var sidesOpacity: CGFloat = 0.2
     @State var isWrap: Bool = false
     @State var autoScroll: Bool = false
     @State var time: TimeInterval = 1
@@ -35,6 +36,7 @@ struct ContentView: View {
                       spacing: spacing,
                       headspace: headspace,
                       sidesScaling: sidesScaling,
+                      sidesOpacity: sidesOpacity,
                       isWrap: isWrap,
                       autoScroll: autoScroll ? .active(time) : .inactive) { name in
                 Image(name)

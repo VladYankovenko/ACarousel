@@ -39,6 +39,7 @@ public struct ACarousel<Data, ID, Content>: View where Data: RandomAccessCollect
             ForEach(viewModel.data, id: viewModel.dataId) {
                 content($0)
                     .frame(width: viewModel.itemWidth)
+                    .opacity(viewModel.itemOpacity($0))
                     .scaleEffect(viewModel.itemScaling($0))
                     .animation(.easeInOut, value: viewModel.activeIndex)
             }
@@ -83,6 +84,7 @@ public extension ACarousel {
          spacing: CGFloat = 10,
          headspace: CGFloat = 10,
          sidesScaling: CGFloat = 0.8,
+         sidesOpacity: CGFloat = 0.2,
          isWrap: Bool = false,
          autoScroll: ACarouselAutoScroll = .inactive,
          @ViewBuilder content: @escaping (Data.Element) -> Content) {
@@ -94,6 +96,7 @@ public extension ACarousel {
             spacing: spacing,
             headspace: headspace,
             sidesScaling: sidesScaling,
+            sidesOpacity: sidesOpacity,
             isWrap: isWrap,
             autoScroll: autoScroll
         )
@@ -120,7 +123,17 @@ public extension ACarousel where ID == Data.Element.ID, Data.Element: Identifiab
     ///   - autoScroll: A enum that define view to scroll automatically. See
     ///     ``ACarouselAutoScroll``. default is `inactive`.
     ///   - content: The view builder that creates views dynamically.
-    init(_ data: Data, index: Binding<Int> = .constant(0), spacing: CGFloat = 10, headspace: CGFloat = 10, sidesScaling: CGFloat = 0.8, isWrap: Bool = false, autoScroll: ACarouselAutoScroll = .inactive, @ViewBuilder content: @escaping (Data.Element) -> Content) {
+    init(
+        _ data: Data,
+        index: Binding<Int> = .constant(0),
+        spacing: CGFloat = 10,
+        headspace: CGFloat = 10,
+        sidesScaling: CGFloat = 0.8,
+        sidesOpacity: CGFloat = 0.2,
+        isWrap: Bool = false,
+        autoScroll: ACarouselAutoScroll = .inactive,
+        @ViewBuilder content: @escaping (Data.Element) -> Content
+    ) {
 
         self.viewModel = ACarouselViewModel(
             data,
@@ -128,6 +141,7 @@ public extension ACarousel where ID == Data.Element.ID, Data.Element: Identifiab
             spacing: spacing,
             headspace: headspace,
             sidesScaling: sidesScaling,
+            sidesOpacity: sidesOpacity,
             isWrap: isWrap,
             autoScroll: autoScroll
         )

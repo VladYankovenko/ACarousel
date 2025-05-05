@@ -34,6 +34,7 @@ class ACarouselViewModel<Data, ID>: ObservableObject where Data: RandomAccessCol
     private let _headspace: CGFloat
     private let _isWrap: Bool
     private let _sidesScaling: CGFloat
+    private let _sidesOpacity: CGFloat
     private let _autoScroll: ACarouselAutoScroll
 
     init(
@@ -43,6 +44,7 @@ class ACarouselViewModel<Data, ID>: ObservableObject where Data: RandomAccessCol
         spacing: CGFloat,
         headspace: CGFloat,
         sidesScaling: CGFloat,
+        sidesOpacity: CGFloat,
         isWrap: Bool,
         autoScroll: ACarouselAutoScroll
     ) {
@@ -56,6 +58,7 @@ class ACarouselViewModel<Data, ID>: ObservableObject where Data: RandomAccessCol
         self._headspace = headspace
         self._isWrap = isWrap
         self._sidesScaling = sidesScaling
+        self._sidesOpacity = sidesOpacity
         self._autoScroll = autoScroll
 
         if data.count > 1 && isWrap {
@@ -114,6 +117,7 @@ extension ACarouselViewModel where ID == Data.Element.ID, Data.Element: Identifi
         spacing: CGFloat,
         headspace: CGFloat,
         sidesScaling: CGFloat,
+        sidesOpacity: CGFloat,
         isWrap: Bool,
         autoScroll: ACarouselAutoScroll
     ) {
@@ -124,6 +128,7 @@ extension ACarouselViewModel where ID == Data.Element.ID, Data.Element: Identifi
             spacing: spacing,
             headspace: headspace,
             sidesScaling: sidesScaling,
+            sidesOpacity: sidesOpacity,
             isWrap: isWrap,
             autoScroll: autoScroll
         )
@@ -187,6 +192,20 @@ extension ACarouselViewModel {
         }
         return data[dataIndex][keyPath: _dataId] == item[keyPath: _dataId] ? 1 : sidesScaling
     }
+
+    /// Defines the opacity based on whether the item is currently active or not.
+    /// - Parameter item: The incoming item
+    /// - Returns: scaling
+    func itemOpacity(_ item: Data.Element) -> CGFloat {
+        guard
+            activeIndex < data.count,
+            let dataIndex = activeIndex as? Data.Index
+        else {
+            return 0
+        }
+        return data[dataIndex][keyPath: _dataId] == item[keyPath: _dataId] ? 1 : _sidesOpacity
+    }
+
 }
 
 // MARK: - private variable
