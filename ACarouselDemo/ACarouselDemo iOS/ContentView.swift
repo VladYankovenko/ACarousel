@@ -9,37 +9,33 @@ import SwiftUI
 import ACarousel
                
 struct Item: Identifiable {
-    let id = UUID()
+    let id: Int
     let image: Image
+    let name: String
 }
 
-let roles = ["Luffy", "Zoro", "Sanji", "Nami", "Usopp", "Chopper", "Robin", "Franky", "Brook"]
+let names: [String] = [
+    "Luffy", "Zoro", "Sanji", "Nami", "Usopp", "Chopper", "Robin", "Franky", "Brook"]
+
+let roles: [Item] = names.enumerated().map { index, name in
+    Item(id: index, image: Image(name), name: name)
+}
+
 
 struct ContentView: View {
     
     @State var spacing: CGFloat = 10
     @State var headspace: CGFloat = 10
-    @State var sidesScaling: CGFloat = 0.8
-    @State var sidesOpacity: CGFloat = 0.2
-    @State var isWrap: Bool = false
-    @State var autoScroll: Bool = false
-    @State var time: TimeInterval = 1
-    @State var currentIndex: Int = 0
-    
+    @State var currentId = 1
+
     var body: some View {
         VStack {
-            Text("\(currentIndex + 1)/\(roles.count)")
             Spacer().frame(height: 40)
             ACarousel(roles,
-                      id: \.self,
-                      index: $currentIndex,
+                      id: $currentId,
                       spacing: spacing,
-                      headspace: headspace,
-                      sidesScaling: sidesScaling,
-                      sidesOpacity: sidesOpacity,
-                      isWrap: isWrap,
-                      autoScroll: autoScroll ? .active(time) : .inactive) { name in
-                Image(name)
+                      headspace: headspace) { role in
+                role.image
                     .resizable()
                     .scaledToFill()
                     .frame(height: 300)
@@ -49,12 +45,11 @@ struct ContentView: View {
             Spacer()
             
             ControlPanel(spacing: $spacing,
-                         headspace: $headspace,
-                         sidesScaling: $sidesScaling,
-                         isWrap: $isWrap,
-                         autoScroll: $autoScroll,
-                         duration: $time)
+                         headspace: $headspace)
             Spacer()
+        }
+        .onChange(of: currentId) { newValue in
+            print(newValue)
         }
     }
 }
@@ -63,11 +58,7 @@ struct ControlPanel: View {
     
     @Binding var spacing: CGFloat
     @Binding var headspace: CGFloat
-    @Binding var sidesScaling: CGFloat
-    @Binding var isWrap: Bool
-    @Binding var autoScroll: Bool
-    @Binding var duration: TimeInterval
-    
+
     var body: some View {
         VStack {
             Group {
@@ -78,28 +69,6 @@ struct ControlPanel: View {
                 HStack {
                     Text("headspace: ").frame(width: 120)
                     Slider(value: $headspace, in: 0...30, minimumValueLabel: Text("0"), maximumValueLabel: Text("30")) { EmptyView() }
-                }
-                HStack {
-                    Text("sidesScaling: ").frame(width: 120)
-                    Slider(value: $sidesScaling, in: 0...1, minimumValueLabel: Text("0"), maximumValueLabel: Text("1")) { EmptyView() }
-                }
-                HStack {
-                    Toggle(isOn: $isWrap, label: {
-                        Text("wrap: ").frame(width: 120)
-                    })
-                }
-                VStack {
-                    HStack {
-                        Toggle(isOn: $autoScroll, label: {
-                            Text("autoScroll: ").frame(width: 120)
-                        })
-                    }
-                    if autoScroll {
-                        HStack {
-                            Text("duration: ").frame(width: 120)
-                            Slider(value: $duration, in: 1...10, minimumValueLabel: Text("1"), maximumValueLabel: Text("10")) { EmptyView() }
-                        }
-                    }
                 }
             }
         }
