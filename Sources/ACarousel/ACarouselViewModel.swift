@@ -55,6 +55,8 @@ class ACarouselViewModel<Data, ID>: ObservableObject where Data: RandomAccessCol
         return itemActualWidth
     }
 
+    var animate: Bool = false
+
     // MARK: - Private Properties
 
     private let _data: Data
@@ -129,6 +131,7 @@ extension ACarouselViewModel {
     }
 
     private func dragChanged(_ value: DragGesture.Value) {
+        animate = false
 
         /// Defines the maximum value of the drag
         /// Avoid dragging more than the values of multiple subviews at the end of the drag,
@@ -155,6 +158,7 @@ extension ACarouselViewModel {
     }
 
     private func dragEnded(_ value: DragGesture.Value) {
+        animate = true
         let dragThreshold: CGFloat = itemWidth / 4
         let velocityThreshold: CGFloat = 500 // можно подстроить под нужную чувствительность
 

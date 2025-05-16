@@ -27,6 +27,8 @@ public struct ACarousel<Data, ID, Content>: View where Data: RandomAccessCollect
     @ObservedObject
     private var viewModel: ACarouselViewModel<Data, ID>
     private let content: (Data.Element) -> Content
+    private let scaleEffect: CGFloat
+    private let opacityEffect: CGFloat
 
     @State private var progress: CGFloat = .zero
 
@@ -40,9 +42,11 @@ public struct ACarousel<Data, ID, Content>: View where Data: RandomAccessCollect
     private func generateContent(proxy: GeometryProxy) -> some View {
         HStack(spacing: viewModel.spacing) {
             ForEach(Array(viewModel.data.enumerated()), id: \.element.id) { index, item in
+                let progress = calculateProgress(for: index)
                 content(item)
                     .frame(width: viewModel.itemWidth)
-                    .scaleEffect(0.8 + 0.2 * calculateProgress(for: index))
+                    .scaleEffect(scaleEffect + (1 - scaleEffect) * progress)
+                    .opacity(opacityEffect + (1 - opacityEffect) * progress)
             }
         }
         .frame(
@@ -53,7 +57,11 @@ public struct ACarousel<Data, ID, Content>: View where Data: RandomAccessCollect
         .contentShape(Rectangle())
         .gesture(viewModel.dragGesture)
         .onChange(of: viewModel.dragOffset) { newValue in
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+            if viewModel.animate {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                    calculateProgress()
+                }
+            } else {
                 calculateProgress()
             }
         }
@@ -62,13 +70,13 @@ public struct ACarousel<Data, ID, Content>: View where Data: RandomAccessCollect
         }
     }
 
-    func calculateProgress() {
+    private func calculateProgress() {
         let offset = -(viewModel.offset + viewModel.dragOffset) + (viewModel.spacing + viewModel.headspace)
         let progress = (offset / viewModel.itemWidthAbsolutle)
         self.progress = progress
     }
 
-    func calculateProgress(for index: Int) -> CGFloat {
+    private func calculateProgress(for index: Int) -> CGFloat {
         let activeIndex = viewModel.activeIndex
         let diff = progress - CGFloat(activeIndex)
         if index == activeIndex {
@@ -108,6 +116,8 @@ public extension ACarousel {
          id: Binding<ID>,
          spacing: CGFloat = 10,
          headspace: CGFloat = 10,
+         scaleEffect: CGFloat = 0.8,
+         opacityEffect: CGFloat = 0.6,
          @ViewBuilder content: @escaping (Data.Element) -> Content) {
 
         self.viewModel = ACarouselViewModel(
@@ -117,6 +127,8 @@ public extension ACarousel {
             headspace: headspace
         )
         self.content = content
+        self.scaleEffect = scaleEffect
+        self.opacityEffect = opacityEffect
     }
 
 }
