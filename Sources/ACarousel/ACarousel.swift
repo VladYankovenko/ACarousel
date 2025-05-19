@@ -24,12 +24,13 @@ import SwiftUI
 public struct ACarousel<Data, ID, Content>: View where Data: RandomAccessCollection, Data.Index == Int,
                                                        ID == Data.Element.ID, Data.Element: Identifiable, Content: View {
 
-    @ObservedObject
+    @StateObject
     private var viewModel: ACarouselViewModel<Data, ID>
     private let content: (Data.Element) -> Content
     private let scaleEffect: CGFloat
     private let opacityEffect: CGFloat
 
+    @Binding var id: ID
     @State private var progress: CGFloat = .zero
 
     public var body: some View {
@@ -65,8 +66,23 @@ public struct ACarousel<Data, ID, Content>: View where Data: RandomAccessCollect
                 calculateProgress()
             }
         }
+        .onChange(of: viewModel.activeIndex) { newValue in
+            guard viewModel.data.indices.contains(newValue) else {
+                return
+            }
+            let id = viewModel.data[newValue].id
+            self.id = id
+        }
+        .onChange(of: id) { newValue in
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                viewModel.update(id: newValue)
+                calculateProgress()
+            }
+        }
         .onAppear() {
-            calculateProgress()
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                calculateProgress()
+            }
         }
     }
 
@@ -119,16 +135,17 @@ public extension ACarousel {
          scaleEffect: CGFloat = 0.8,
          opacityEffect: CGFloat = 0.6,
          @ViewBuilder content: @escaping (Data.Element) -> Content) {
-
-        self.viewModel = ACarouselViewModel(
+        let activeIndex = data.firstIndex(where: { $0.id == id.wrappedValue }) ?? .zero
+        self._viewModel = .init(wrappedValue: ACarouselViewModel(
             data,
-            id: id,
+            activeIndex: activeIndex,
             spacing: spacing,
             headspace: headspace
-        )
+        )) 
         self.content = content
         self.scaleEffect = scaleEffect
         self.opacityEffect = opacityEffect
+        self._id = id
     }
 
 }

@@ -60,8 +60,6 @@ class ACarouselViewModel<Data, ID>: ObservableObject where Data: RandomAccessCol
     // MARK: - Private Properties
 
     private let _data: Data
-    @Binding
-    private var id: ID
     private let _spacing: CGFloat
     private let _headspace: CGFloat
 
@@ -72,15 +70,14 @@ class ACarouselViewModel<Data, ID>: ObservableObject where Data: RandomAccessCol
 
     init(
         _ data: Data,
-        id: Binding<ID>,
+        activeIndex: Int,
         spacing: CGFloat,
         headspace: CGFloat
     ) {
         self._data = data
-        self._id = id
+        self.activeIndex = activeIndex
         self._spacing = spacing
         self._headspace = headspace
-        setActive(index: data.firstIndex(where: { $0.id == id.wrappedValue }) ?? .zero)
     }
 
     // MARK: - Public Methods
@@ -89,9 +86,9 @@ class ACarouselViewModel<Data, ID>: ObservableObject where Data: RandomAccessCol
         viewSize = size
     }
 
-}
-
-extension ACarouselViewModel {
+    func update(id: ID) {
+        activeIndex = _data.firstIndex(where: { $0.id == id }) ?? .zero
+    }
 
 }
 
@@ -200,9 +197,6 @@ extension ACarouselViewModel {
             return
         }
         activeIndex = index
-        DispatchQueue.main.async(execute: {
-            self.id = self._data[index].id
-        })
     }
 
 }

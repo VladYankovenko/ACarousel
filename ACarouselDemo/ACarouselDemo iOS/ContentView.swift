@@ -15,7 +15,7 @@ struct Item: Identifiable {
 }
 
 let names: [String] = [
-    "Luffy", "Zoro", "Sanji", "Nami", "Usopp", "Chopper", "Robin", "Franky", "Brook"]
+    "Luffy", "Zoro", "Sanji"]
 
 let roles: [Item] = names.enumerated().map { index, name in
     Item(id: index, image: Image(name), name: name)
@@ -24,9 +24,9 @@ let roles: [Item] = names.enumerated().map { index, name in
 
 struct ContentView: View {
     
-    @State var spacing: CGFloat = 10
-    @State var headspace: CGFloat = 10
-    @State var currentId = 1
+    @State var spacing: CGFloat = 30
+    @State var headspace: CGFloat = 50
+    @State var currentId = 0
 
     var body: some View {
         VStack {
@@ -45,7 +45,8 @@ struct ContentView: View {
             Spacer()
             
             ControlPanel(spacing: $spacing,
-                         headspace: $headspace)
+                         headspace: $headspace,
+                         selected: $currentId)
             Spacer()
         }
         .onChange(of: currentId) { newValue in
@@ -55,9 +56,11 @@ struct ContentView: View {
 }
 
 struct ControlPanel: View {
-    
+
     @Binding var spacing: CGFloat
     @Binding var headspace: CGFloat
+    @Binding var selected: Int
+    var ids: [Int] = [0, 1, 2]
 
     var body: some View {
         VStack {
@@ -69,6 +72,13 @@ struct ControlPanel: View {
                 HStack {
                     Text("headspace: ").frame(width: 120)
                     Slider(value: $headspace, in: 0...30, minimumValueLabel: Text("0"), maximumValueLabel: Text("30")) { EmptyView() }
+                }
+                HStack {
+                    ForEach(ids, id: \.self) { item in
+                        Button("\(item)") {
+                            selected = item
+                        }
+                    }
                 }
             }
         }
