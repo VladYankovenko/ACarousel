@@ -41,7 +41,6 @@ public struct ACarousel<Data, ID, Content>: View where Data: RandomAccessCollect
                     .frame(width: viewModel.itemWidth)
                     .opacity(viewModel.itemOpacity($0))
                     .scaleEffect(viewModel.itemScaling($0))
-                    .animation(.easeInOut, value: viewModel.activeIndex)
             }
         }
         .frame(
