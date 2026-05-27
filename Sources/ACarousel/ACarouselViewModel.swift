@@ -35,6 +35,7 @@ class ACarouselViewModel<Data, ID>: ObservableObject where Data: RandomAccessCol
     private let _isWrap: Bool
     private let _sidesScaling: CGFloat
     private let _sidesOpacity: CGFloat
+    private let _dragTriggerDistance: CGFloat
     private let _autoScroll: ACarouselAutoScroll
 
     init(
@@ -46,6 +47,7 @@ class ACarouselViewModel<Data, ID>: ObservableObject where Data: RandomAccessCol
         sidesScaling: CGFloat,
         sidesOpacity: CGFloat,
         isWrap: Bool,
+        dragTriggerDistance: CGFloat,
         autoScroll: ACarouselAutoScroll
     ) {
         guard index.wrappedValue < data.count else {
@@ -59,6 +61,7 @@ class ACarouselViewModel<Data, ID>: ObservableObject where Data: RandomAccessCol
         self._isWrap = isWrap
         self._sidesScaling = sidesScaling
         self._sidesOpacity = sidesOpacity
+        self._dragTriggerDistance = dragTriggerDistance
         self._autoScroll = autoScroll
 
         if data.count > 1 && isWrap {
@@ -119,6 +122,7 @@ extension ACarouselViewModel where ID == Data.Element.ID, Data.Element: Identifi
         sidesScaling: CGFloat,
         sidesOpacity: CGFloat,
         isWrap: Bool,
+        dragTriggerDistance: CGFloat,
         autoScroll: ACarouselAutoScroll
     ) {
         self.init(
@@ -130,6 +134,7 @@ extension ACarouselViewModel where ID == Data.Element.ID, Data.Element: Identifi
             sidesScaling: sidesScaling,
             sidesOpacity: sidesOpacity,
             isWrap: isWrap,
+            dragTriggerDistance: dragTriggerDistance,
             autoScroll: autoScroll
         )
     }
@@ -281,7 +286,7 @@ extension ACarouselViewModel {
 extension ACarouselViewModel {
     /// drag gesture of view
     var dragGesture: some Gesture {
-        DragGesture()
+        DragGesture(minimumDistance: _dragTriggerDistance)
             .onChanged(dragChanged)
             .onEnded(dragEnded)
     }

@@ -74,6 +74,7 @@ public extension ACarousel {
     ///   - sidesScaling: The scale of the subviews on both sides, limits 0...1,
     ///     default is 0.8.
     ///   - isWrap: Define views to scroll through in a loop, default is false.
+    ///   - dragTriggerDistance: MinimumDistance parameter for scrolling `DragGesture`.
     ///   - autoScroll: A enum that define view to scroll automatically. See
     ///     ``ACarouselAutoScroll``. default is `inactive`.
     ///   - content: The view builder that creates views dynamically.
@@ -85,6 +86,7 @@ public extension ACarousel {
          sidesScaling: CGFloat = 0.8,
          sidesOpacity: CGFloat = 0.2,
          isWrap: Bool = false,
+         dragTriggerDistance: CGFloat = 10,
          autoScroll: ACarouselAutoScroll = .inactive,
          @ViewBuilder content: @escaping (Data.Element) -> Content) {
 
@@ -97,6 +99,7 @@ public extension ACarousel {
             sidesScaling: sidesScaling,
             sidesOpacity: sidesOpacity,
             isWrap: isWrap,
+            dragTriggerDistance: dragTriggerDistance,
             autoScroll: autoScroll
         )
         self.content = content
@@ -119,6 +122,7 @@ public extension ACarousel where ID == Data.Element.ID, Data.Element: Identifiab
     ///   - sidesScaling: The scale of the subviews on both sides, limits 0...1,
     ///      default is 0.8.
     ///   - isWrap: Define views to scroll through in a loop, default is false.
+    ///   - dragTriggerDistance: MinimumDistance parameter for scrolling `DragGesture`.
     ///   - autoScroll: A enum that define view to scroll automatically. See
     ///     ``ACarouselAutoScroll``. default is `inactive`.
     ///   - content: The view builder that creates views dynamically.
@@ -130,6 +134,7 @@ public extension ACarousel where ID == Data.Element.ID, Data.Element: Identifiab
         sidesScaling: CGFloat = 0.8,
         sidesOpacity: CGFloat = 0.2,
         isWrap: Bool = false,
+        dragTriggerDistance: CGFloat = 10,
         autoScroll: ACarouselAutoScroll = .inactive,
         @ViewBuilder content: @escaping (Data.Element) -> Content
     ) {
@@ -142,6 +147,7 @@ public extension ACarousel where ID == Data.Element.ID, Data.Element: Identifiab
             sidesScaling: sidesScaling,
             sidesOpacity: sidesOpacity,
             isWrap: isWrap,
+            dragTriggerDistance: dragTriggerDistance,
             autoScroll: autoScroll
         )
         self.content = content
