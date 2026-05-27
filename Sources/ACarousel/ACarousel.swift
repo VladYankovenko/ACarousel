@@ -73,6 +73,10 @@ public extension ACarousel {
     ///   - headspace: The width of the exposed side subviews, default is 10
     ///   - sidesScaling: The scale of the subviews on both sides, limits 0...1,
     ///     default is 0.8.
+    ///   - sidesOpacity: The opacity of the subviews on both sides, limits 0...1,
+    ///     default is 0.2.
+    ///   - centerDraggingOpacity: The opacity applied to the central item when it is being dragged, limits 0...1,
+    ///     default is 1.0.
     ///   - isWrap: Define views to scroll through in a loop, default is false.
     ///   - dragTriggerDistance: MinimumDistance parameter for scrolling `DragGesture`.
     ///   - autoScroll: A enum that define view to scroll automatically. See
@@ -85,6 +89,7 @@ public extension ACarousel {
          headspace: CGFloat = 10,
          sidesScaling: CGFloat = 0.8,
          sidesOpacity: CGFloat = 0.2,
+         centerDraggingOpacity: CGFloat = 1.0,
          isWrap: Bool = false,
          dragTriggerDistance: CGFloat = 10,
          autoScroll: ACarouselAutoScroll = .inactive,
@@ -98,6 +103,7 @@ public extension ACarousel {
             headspace: headspace,
             sidesScaling: sidesScaling,
             sidesOpacity: sidesOpacity,
+            centerDraggingOpacity: centerDraggingOpacity,
             isWrap: isWrap,
             dragTriggerDistance: dragTriggerDistance,
             autoScroll: autoScroll
@@ -121,6 +127,10 @@ public extension ACarousel where ID == Data.Element.ID, Data.Element: Identifiab
     ///   - headspace: The width of the exposed side subviews, default is 10
     ///   - sidesScaling: The scale of the subviews on both sides, limits 0...1,
     ///      default is 0.8.
+    ///   - sidesOpacity: The opacity of the subviews on both sides, limits 0...1,
+    ///     default is 0.2.
+    ///   - centerDraggingOpacity: The opacity applied to the central item when it is being dragged, limits 0...1,
+    ///     default is 1.0.
     ///   - isWrap: Define views to scroll through in a loop, default is false.
     ///   - dragTriggerDistance: MinimumDistance parameter for scrolling `DragGesture`.
     ///   - autoScroll: A enum that define view to scroll automatically. See
@@ -133,12 +143,12 @@ public extension ACarousel where ID == Data.Element.ID, Data.Element: Identifiab
         headspace: CGFloat = 10,
         sidesScaling: CGFloat = 0.8,
         sidesOpacity: CGFloat = 0.2,
+        centerDraggingOpacity: CGFloat = 1.0,
         isWrap: Bool = false,
         dragTriggerDistance: CGFloat = 10,
         autoScroll: ACarouselAutoScroll = .inactive,
         @ViewBuilder content: @escaping (Data.Element) -> Content
     ) {
-
         self.viewModel = ACarouselViewModel(
             data,
             index: index,
@@ -146,6 +156,7 @@ public extension ACarousel where ID == Data.Element.ID, Data.Element: Identifiab
             headspace: headspace,
             sidesScaling: sidesScaling,
             sidesOpacity: sidesOpacity,
+            centerDraggingOpacity: centerDraggingOpacity,
             isWrap: isWrap,
             dragTriggerDistance: dragTriggerDistance,
             autoScroll: autoScroll

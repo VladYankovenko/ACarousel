@@ -35,6 +35,7 @@ class ACarouselViewModel<Data, ID>: ObservableObject where Data: RandomAccessCol
     private let _isWrap: Bool
     private let _sidesScaling: CGFloat
     private let _sidesOpacity: CGFloat
+    private let _centerDraggingOpacity: CGFloat
     private let _dragTriggerDistance: CGFloat
     private let _autoScroll: ACarouselAutoScroll
 
@@ -46,6 +47,7 @@ class ACarouselViewModel<Data, ID>: ObservableObject where Data: RandomAccessCol
         headspace: CGFloat,
         sidesScaling: CGFloat,
         sidesOpacity: CGFloat,
+        centerDraggingOpacity: CGFloat,
         isWrap: Bool,
         dragTriggerDistance: CGFloat,
         autoScroll: ACarouselAutoScroll
@@ -61,6 +63,7 @@ class ACarouselViewModel<Data, ID>: ObservableObject where Data: RandomAccessCol
         self._isWrap = isWrap
         self._sidesScaling = sidesScaling
         self._sidesOpacity = sidesOpacity
+        self._centerDraggingOpacity = centerDraggingOpacity
         self._dragTriggerDistance = dragTriggerDistance
         self._autoScroll = autoScroll
 
@@ -93,8 +96,16 @@ class ACarouselViewModel<Data, ID>: ObservableObject where Data: RandomAccessCol
     /// Offset x of the view drag.
     @Published var dragOffset: CGFloat = .zero
 
+    @Published
+    private(set) var isDraggingCurrentItem: Bool = false
+
     /// size of GeometryProxy
     var viewSize: CGSize = .zero
+
+    private var centeredItemFrame: CGRect {
+        let carouselFrame = CGRect(origin: .zero, size: viewSize)
+        return carouselFrame.insetBy(dx: defaultPadding, dy: .zero)
+    }
 
     /// Counting of time
     /// work when `isTimerActive` is true
@@ -121,6 +132,7 @@ extension ACarouselViewModel where ID == Data.Element.ID, Data.Element: Identifi
         headspace: CGFloat,
         sidesScaling: CGFloat,
         sidesOpacity: CGFloat,
+        centerDraggingOpacity: CGFloat,
         isWrap: Bool,
         dragTriggerDistance: CGFloat,
         autoScroll: ACarouselAutoScroll
@@ -133,6 +145,7 @@ extension ACarouselViewModel where ID == Data.Element.ID, Data.Element: Identifi
             headspace: headspace,
             sidesScaling: sidesScaling,
             sidesOpacity: sidesOpacity,
+            centerDraggingOpacity: centerDraggingOpacity,
             isWrap: isWrap,
             dragTriggerDistance: dragTriggerDistance,
             autoScroll: autoScroll
@@ -208,7 +221,8 @@ extension ACarouselViewModel {
         else {
             return 0
         }
-        return data[dataIndex][keyPath: _dataId] == item[keyPath: _dataId] ? 1 : _sidesOpacity
+        let draggingOpacity = isDraggingCurrentItem ? _centerDraggingOpacity : 1
+        return data[dataIndex][keyPath: _dataId] == item[keyPath: _dataId] ? draggingOpacity : _sidesOpacity
     }
 
 }
@@ -292,7 +306,7 @@ extension ACarouselViewModel {
     }
 
     private func dragChanged(_ value: DragGesture.Value) {
-
+        isDraggingCurrentItem = centeredItemFrame.contains(value.startLocation)
         isAnimatedOffset = true
 
         /// Defines the maximum value of the drag
@@ -325,6 +339,7 @@ extension ACarouselViewModel {
     private func dragEnded(_ value: DragGesture.Value) {
         /// reset drag offset
         dragOffset = .zero
+        isDraggingCurrentItem = false
 
         /// reset timing and restart active timer
         resetTiming()
