@@ -49,7 +49,7 @@ public struct ACarousel<Data, ID, Content>: View where Data: RandomAccessCollect
         )
         .offset(x: viewModel.offset)
         .contentShape(Rectangle())
-        .gesture(viewModel.dragGesture)
+        .simultaneousGesture(viewModel.dragGesture)
         .animation(viewModel.offsetAnimation, value: viewModel.offset)
         .onReceive(timer: viewModel.timer, perform: viewModel.receiveTimer)
         .onReceiveAppLifeCycle(perform: viewModel.setTimerActive)
