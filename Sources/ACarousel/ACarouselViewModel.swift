@@ -341,24 +341,29 @@ extension ACarouselViewModel {
         dragOffset = .zero
         isDraggingCurrentItem = false
 
-        /// reset timing and restart active timer
-        resetTiming()
-        isTimerActive = true
-
         /// Defines the drag threshold
         /// At the end of the drag, if the drag value exceeds the drag threshold,
         /// the active view will be toggled
         /// default is one third of subview
         let dragThreshold: CGFloat = itemWidth / 4
 
-        var activeIndex = self.activeIndex
+        let previousActiveIndex = self.activeIndex
+        var nextActiveIndex = previousActiveIndex
         if value.translation.width > dragThreshold {
-            activeIndex -= 1
+            nextActiveIndex -= 1
         }
         if value.translation.width < -dragThreshold {
-            activeIndex += 1
+            nextActiveIndex += 1
         }
-        self.activeIndex = max(0, min(activeIndex, data.count - 1))
+        nextActiveIndex = max(0, min(nextActiveIndex, data.count - 1))
+
+        /// Preserve elapsed auto-scroll time for press-and-hold.
+        /// Restart the interval only when the drag actually changes the banner.
+        if nextActiveIndex != previousActiveIndex {
+            resetTiming()
+            self.activeIndex = nextActiveIndex
+        }
+        isTimerActive = true
     }
 
     private func rubberBandClamp(_ offset: CGFloat, maxOffset: CGFloat) -> CGFloat {
